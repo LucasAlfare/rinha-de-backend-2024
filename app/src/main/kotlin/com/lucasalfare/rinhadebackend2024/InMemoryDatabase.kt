@@ -31,7 +31,7 @@ object InMemoryDatabase {
         "d" -> {
           val nextBalance = it.balance - transactionRequestDTO.value
           if (nextBalance < 0) {
-            return OperationResult(HttpStatusCode.UnprocessableEntity) //422
+            return OperationResult(code = HttpStatusCode.UnprocessableEntity) //422
           } else {
             it.balance = nextBalance
             it.transactions += Transaction(
@@ -40,7 +40,12 @@ object InMemoryDatabase {
               transactionRequestDTO.description,
               AuxiliryDate.formatToString(System.currentTimeMillis())
             )
-            return OperationResult(HttpStatusCode.OK, TransactionResponseDTO(it.limit, it.balance)) //200
+
+            // 200
+            return OperationResult(
+              code = HttpStatusCode.OK,
+              data = TransactionResponseDTO(it.limit, it.balance)
+            )
           }
         }
 
@@ -52,14 +57,19 @@ object InMemoryDatabase {
             transactionRequestDTO.description,
             AuxiliryDate.formatToString(System.currentTimeMillis())
           )
-          return OperationResult(HttpStatusCode.OK, TransactionResponseDTO(it.limit, it.balance)) // 200
+
+          // 200
+          return OperationResult(
+            code = HttpStatusCode.OK,
+            data = TransactionResponseDTO(it.limit, it.balance)
+          )
         }
 
         else -> {}
       }
     }
 
-    return OperationResult(HttpStatusCode.NotFound) // 404
+    return OperationResult(code = HttpStatusCode.NotFound) // 404
   }
 
   /**

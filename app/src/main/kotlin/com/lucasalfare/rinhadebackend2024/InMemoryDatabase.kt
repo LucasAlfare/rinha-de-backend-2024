@@ -46,6 +46,12 @@ object InMemoryDatabase {
 
         "c" -> {
           it.balance += transactionRequestDTO.value
+          it.transactions += Transaction(
+            transactionRequestDTO.value,
+            transactionRequestDTO.type,
+            transactionRequestDTO.description,
+            AuxiliryDate.formatToString(System.currentTimeMillis())
+          )
           return OperationResult(HttpStatusCode.OK, TransactionResponseDTO(it.limit, it.balance)) // 200
         }
 

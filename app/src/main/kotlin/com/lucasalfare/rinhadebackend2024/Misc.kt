@@ -1,12 +1,13 @@
 package com.lucasalfare.rinhadebackend2024
 
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 
 /**
  * Um objeto singleton para formatar datas e horas em uma representação de string específica.
  */
-object Formatter {
+object AuxiliryDate {
 
   // O formato de data e hora desejado: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
   // Criamos um objeto SimpleDateFormat para definir o formato exato de data e hora desejado.
@@ -20,5 +21,13 @@ object Formatter {
    * @param dateTime o valor de data e hora em milissegundos a ser formatado.
    * @return uma string formatada representando a data e hora no formato "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'".
    */
-  fun format(dateTime: Long): String = sdf.format(dateTime)
+  fun formatToString(dateTime: Long): String = sdf.format(dateTime)
+
+  /**
+   * Formata uma string de data do formato ISO 8601 para milissegundos.
+   *
+   * @param dateTime o valor de data, em string ISO 8601, a ser convertido em milissegundos.
+   * @return quantidade de milissegundos respectiva à data em formato ISO 8601 fornecida.
+   */
+  fun formatToMilliseconds(dateTime: String) = Instant.parse(dateTime).epochSecond
 }

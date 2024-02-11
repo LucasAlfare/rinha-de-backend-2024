@@ -45,7 +45,7 @@ object InMemoryDatabase {
           transactionRequestDTO.value,
           transactionRequestDTO.type,
           transactionRequestDTO.description,
-          Formatter.format(System.currentTimeMillis())
+          AuxiliryDate.formatToString(System.currentTimeMillis())
         )
 
         // retornamos a operação indicando sucesso, juntamente
@@ -75,10 +75,10 @@ object InMemoryDatabase {
       val bankStatement = BankStatement(
         Balance(
           total = it.balance,
-          bankStatementDate = Formatter.format(System.currentTimeMillis()),
+          bankStatementDate = AuxiliryDate.formatToString(System.currentTimeMillis()),
           limit = it.limit
         ),
-        it.transactions.takeLast(10)
+        it.transactions.takeLast(10) as MutableList<Transaction>
       )
 
       return OperationResult(HttpStatusCode.OK, bankStatement)

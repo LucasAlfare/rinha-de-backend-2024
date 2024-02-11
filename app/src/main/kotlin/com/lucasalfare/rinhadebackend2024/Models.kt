@@ -17,6 +17,8 @@ data class Transaction(
   @SerialName("valor") val value: Int,
   @SerialName("tipo") val type: String,
   @SerialName("descricao") val description: String,
+  // TODO: considerar usar, por padrão, diretamente a data em milissegundos
+  // TODO: criar um tipo "Transaction" extra que contém esse campo em String
   @SerialName("realizada_em") val performedAtDate: String
 )
 
@@ -56,11 +58,12 @@ data class Balance(
 @Serializable
 data class BankStatement(
   @SerialName("saldo") val balance: Balance,
-  @SerialName("ultimas_transacoes") val lastTransactions: List<Transaction>
+  @SerialName("ultimas_transacoes") val lastTransactions: MutableList<Transaction>
 ) {
 
   init {
-    // TODO: Ordenar lastTransactions por suas datas.
+    // o excesso de conversão de String para Long é possivelmente um desperdício
+    lastTransactions.sortBy { AuxiliryDate.formatToMilliseconds(it.performedAtDate) }
   }
 }
 

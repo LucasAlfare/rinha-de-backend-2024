@@ -27,42 +27,33 @@ object InMemoryDatabase {
     transactionRequestDTO: TransactionRequestDTO
   ): OperationResult {
     clients.find { it.id == id }?.let {
-      // nós tentamos retirar o valor da transação do saldo atual
-      val nextBalance = it.balance - transactionRequestDTO.value
+      when (transactionRequestDTO.type) {
+        "d" -> {
+          val nextBalance = it.balance - transactionRequestDTO.value
+          if (nextBalance < 0) {
+            return OperationResult(HttpStatusCode.UnprocessableEntity) //422
+          } else {
+            it.balance = nextBalance
+            it.transactions += Transaction(
+              transactionRequestDTO.value,
+              transactionRequestDTO.type,
+              transactionRequestDTO.description,
+              AuxiliryDate.formatToString(System.currentTimeMillis())
+            )
+            return OperationResult(HttpStatusCode.OK, TransactionResponseDTO(it.limit, it.balance)) //200
+          }
+        }
 
-      // nós verificamos se o saldo de teste é maior que 0,
-      // ou seja, se o valor da transação não fez com que
-      // o saldo atual fique negativo
-      if (nextBalance >= 0) {
-        // se o valor de teste estiver maior ou igual a 0
-        // então nós atualizamos o saldo do cliente com
-        // esse novo valor
-        it.balance = nextBalance
+        "c" -> {
+          it.balance += transactionRequestDTO.value
+          return OperationResult(HttpStatusCode.OK, TransactionResponseDTO(it.limit, it.balance)) // 200
+        }
 
-        // adicionamos um novo resgistro de transação ao
-        // cliente atual
-        it.transactions += Transaction(
-          transactionRequestDTO.value,
-          transactionRequestDTO.type,
-          transactionRequestDTO.description,
-          AuxiliryDate.formatToString(System.currentTimeMillis())
-        )
-
-        // retornamos a operação indicando sucesso, juntamente
-        // com o DTO no formato requerido pela especificação
-        // da Rinha 2024
-        return OperationResult(HttpStatusCode.OK, TransactionResponseDTO(it.limit, it.balance))
-      } else {
-        // quando não for possível retirar o valor da transação
-        // do valor de saldo atual, retornamos 422, sem alterar
-        // nada
-        return OperationResult(HttpStatusCode.UnprocessableEntity)
+        else -> {}
       }
     }
 
-    // caso não tenha sido possível localizar nenhum usuário com
-    // ID igual ao solicitado, retornamos 404
-    return OperationResult(HttpStatusCode.NotFound)
+    return OperationResult(HttpStatusCode.NotFound) // 404
   }
 
   /**

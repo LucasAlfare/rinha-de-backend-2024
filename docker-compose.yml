@@ -1,0 +1,54 @@
+# explicação network_mode=host: https://stackoverflow.com/a/63099775/4563960
+version: '3.8'
+
+services:
+
+  minha-api:
+    container_name: rinha-2024-container
+    build: .
+    image: rinha-2024-image
+    depends_on:
+      meu-db:
+        condition: service_healthy
+    environment:
+      #      PG_ADDRESS: localhost:5432
+      PG_ADDRESS: meu-db
+      PG_USERNAME: postgres
+      PG_PASSWORD: postgres
+      PG_DATABASE: rinha-2024
+    networks:
+      - rinha-2024-network
+    ports:
+      - "9999:9999"
+    #    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '0.6'
+          memory: '1024MB'
+
+  meu-db:
+    container_name: rinha-2024-postgres-container
+    image: postgres:15-alpine
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rinha-2024
+    networks:
+      - rinha-2024-network
+    ports:
+      - "5432:5432"
+    #    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '0.85'
+          memory: '1792MB'
+
+networks:
+  rinha-2024-network:

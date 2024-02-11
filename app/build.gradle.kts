@@ -68,3 +68,20 @@ tasks.named<Test>("test") {
   // Use JUnit Platform for unit tests.
   useJUnitPlatform()
 }
+
+kotlin {
+  jvmToolchain(17)
+}
+
+/*
+This specifies a custom task when creating a ".jar" for this project.
+The main thing is to define manifest and include all dependencies in the final `.jar`.
+ */
+tasks.withType<Jar> {
+  manifest {
+    attributes["Main-Class"] = "com.lucasalfare.rinhadebackend2024.AppKt"
+  }
+
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  from(configurations.compileClasspath.map { config -> config.map { if (it.isDirectory) it else zipTree(it) } })
+}

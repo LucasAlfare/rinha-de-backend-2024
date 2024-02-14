@@ -3,29 +3,65 @@ version: '3.8'
 
 services:
 
-  minha-api:
-    container_name: rinha-2024-container
+  minha-api-1:
+    container_name: rinha-2024-api-1-container
     build: .
-    image: rinha-2024-image
+    image: rinha-2024-1-image
+    hostname: minha-api-1
     depends_on:
       meu-db:
         condition: service_healthy
     environment:
-      #      PG_ADDRESS: localhost:5432
       PG_ADDRESS: meu-db
       PG_USERNAME: postgres
       PG_PASSWORD: postgres
       PG_DATABASE: rinha-2024
     networks:
       - rinha-2024-network
-    ports:
-      - "9999:9999"
-    #    network_mode: host
     deploy:
       resources:
         limits:
-          cpus: '0.6'
-          memory: '1024MB'
+          cpus: "0.6"
+          memory: "200MB"
+
+  minha-api-2:
+    container_name: rinha-2024-api-2-container
+    build: .
+    image: rinha-2024-2-image
+    hostname: minha-api-2
+    depends_on:
+      meu-db:
+        condition: service_healthy
+    environment:
+      PG_ADDRESS: meu-db
+      PG_USERNAME: postgres
+      PG_PASSWORD: postgres
+      PG_DATABASE: rinha-2024
+    networks:
+      - rinha-2024-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.6"
+          memory: "200MB"
+
+  meu-nginx:
+    container_name: rinha-2024-nginx-container
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - minha-api-1
+      - minha-api-2
+    networks:
+      - rinha-2024-network
+    ports:
+      - "9999:9999"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.17"
+          memory: "10MB"
 
   meu-db:
     container_name: rinha-2024-postgres-container
@@ -43,12 +79,11 @@ services:
       - rinha-2024-network
     ports:
       - "5432:5432"
-    #    network_mode: host
     deploy:
       resources:
         limits:
-          cpus: '0.85'
-          memory: '1792MB'
+          cpus: "0.13"
+          memory: "140MB"
 
 networks:
   rinha-2024-network:

@@ -45,13 +45,11 @@ object PostgresDatabase {
     }
 
     // Insere dados de clientes padrão para teste
-    dbQuery {
-      ClientsTable.insert { it[id] = 1; it[limit] = 100000; it[balance] = 0 }
-      ClientsTable.insert { it[id] = 2; it[limit] = 80000; it[balance] = 0 }
-      ClientsTable.insert { it[id] = 3; it[limit] = 1000000; it[balance] = 0 }
-      ClientsTable.insert { it[id] = 4; it[limit] = 10000000; it[balance] = 0 }
-      ClientsTable.insert { it[id] = 5; it[limit] = 500000; it[balance] = 0 }
-    }
+    dbQuery { ClientsTable.insertIgnore { it[id] = 1; it[limit] = 100000; it[balance] = 0 } }
+    dbQuery { ClientsTable.insertIgnore { it[id] = 2; it[limit] = 80000; it[balance] = 0 } }
+    dbQuery { ClientsTable.insertIgnore { it[id] = 3; it[limit] = 1000000; it[balance] = 0 } }
+    dbQuery { ClientsTable.insertIgnore { it[id] = 4; it[limit] = 10000000; it[balance] = 0 } }
+    dbQuery { ClientsTable.insertIgnore { it[id] = 5; it[limit] = 500000; it[balance] = 0 } }
   }
 
   /**
@@ -80,7 +78,9 @@ object PostgresDatabase {
               ClientsTable.update({ ClientsTable.id eq targetClient[ClientsTable.id] }) {
                 it[balance] = nextBalance
               }
+            }
 
+            dbQuery {
               TransactionsTable.insert {
                 it[value] = transactionRequestDTO.value
                 it[type] = transactionRequestDTO.type
@@ -105,7 +105,9 @@ object PostgresDatabase {
             ClientsTable.update({ ClientsTable.id eq targetClient[ClientsTable.id] }) {
               it[balance] = nextBalance
             }
+          }
 
+          dbQuery {
             TransactionsTable.insert {
               it[value] = transactionRequestDTO.value
               it[type] = transactionRequestDTO.type

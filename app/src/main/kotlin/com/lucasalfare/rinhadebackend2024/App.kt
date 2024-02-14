@@ -18,6 +18,8 @@ import kotlinx.serialization.json.Json
  * Define rotas para manipulação de transações e obtenção de extrato bancário.
  */
 suspend fun main() {
+  println("Hello from my API! :)")
+
   PostgresDatabase.initialize(
     address = System.getenv("PG_ADDRESS"),
     databaseName = System.getenv("PG_DATABASE"),

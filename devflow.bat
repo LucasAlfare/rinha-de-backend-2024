@@ -4,13 +4,13 @@
 :: e gerenciamento de containers Docker para garantir consistência durante o desenvolvimento.
 
 :: Limpar todos os builds existentes
-call gradlew clean
+:: call gradlew clean
 
 :: Compilar o projeto
-call gradlew build
+:: call gradlew build
 
 :: Construir o JAR do projeto
-call gradlew jar
+:: call gradlew jar
 
 :: Remover todos os recursos relacionados ao Docker Compose, incluindo volumes
 call docker-compose down --volumes --rmi local

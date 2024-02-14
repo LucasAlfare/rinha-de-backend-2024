@@ -6,7 +6,7 @@ services:
   minha-api-1:
     container_name: rinha-2024-api-1-container
     build: .
-    image: rinha-2024-1-image
+    #    image: rinha-2024-1-image
     hostname: minha-api-1
     depends_on:
       meu-db:
@@ -27,7 +27,7 @@ services:
   minha-api-2:
     container_name: rinha-2024-api-2-container
     build: .
-    image: rinha-2024-2-image
+    #    image: rinha-2024-2-image
     hostname: minha-api-2
     depends_on:
       meu-db:

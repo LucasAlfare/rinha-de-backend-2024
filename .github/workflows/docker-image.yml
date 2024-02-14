@@ -1,3 +1,5 @@
+#novo
+
 name: Publish Docker image to DockerHub
 
 on:

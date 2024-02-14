@@ -62,10 +62,8 @@ object PostgresDatabase {
     id: Int,
     transactionRequestDTO: TransactionRequestDTO
   ): OperationResult {
-    // Verifica se o cliente existe
-    val targetClient = dbQuery { ClientsTable.select { ClientsTable.id eq id }.singleOrNull() }
-
-    targetClient?.let { search ->
+    // Verifica se o cliente existe para executar as operações
+    dbQuery { ClientsTable.select { ClientsTable.id eq id }.singleOrNull() }?.let { search ->
       when (transactionRequestDTO.type) {
         "d" -> {
           val nextBalance = search[ClientsTable.balance] - transactionRequestDTO.value
@@ -75,7 +73,7 @@ object PostgresDatabase {
           } else {
             // Atualiza o saldo do cliente e insere a transação
             dbQuery {
-              ClientsTable.update({ ClientsTable.id eq targetClient[ClientsTable.id] }) {
+              ClientsTable.update({ ClientsTable.id eq search[ClientsTable.id] }) {
                 it[balance] = nextBalance
               }
             }
@@ -102,7 +100,7 @@ object PostgresDatabase {
           val nextBalance = search[ClientsTable.balance] + transactionRequestDTO.value
           // Atualiza o saldo do cliente e insere a transação
           dbQuery {
-            ClientsTable.update({ ClientsTable.id eq targetClient[ClientsTable.id] }) {
+            ClientsTable.update({ ClientsTable.id eq search[ClientsTable.id] }) {
               it[balance] = nextBalance
             }
           }
